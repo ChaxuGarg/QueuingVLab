@@ -1,383 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Experiment 2</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
     <style>
-        /* Add a black background color to the top navigation */
-        .topnav {
-            background-color: #333;
-            overflow: hidden;
-            width: 100vw;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
+      /* Add a black background color to the top navigation */
+      .topnav {
+        background-color: #333;
+        overflow: hidden;
+        width: 100vw;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
 
-        /* Style the links inside the navigation bar */
-        .topnav a {
-            float: left;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 20px 30px;
-            text-decoration: none;
-            font-size: 17px;
-        }
+      /* Style the links inside the navigation bar */
+      .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 20px 30px;
+        text-decoration: none;
+        font-size: 17px;
+      }
 
-        .topnav span {
-            font-size: x-large;
-            position: relative;
-            left: 0;
-            float: left;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 30px;
-        }
+      .topnav span {
+        font-size: x-large;
+        position: relative;
+        left: 0;
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 30px;
+      }
 
-        /* Change the color of links on hover */
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
+      /* Change the color of links on hover */
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+      }
 
-        /* Add a color to the active/current link */
-        .topnav a.active {
-            background-color: #04AA6D;
-            color: white;
-        }
+      /* Add a color to the active/current link */
+      .topnav a.active {
+        background-color: #04aa6d;
+        color: white;
+      }
 
-        #chart_div {
-            width: 100vw;
-        }
+      #chart_div {
+        width: 100vw;
+        height: 80vh;
+      }
 
-        #table_div {
-            display: none;
-            font-size: xx-large;
-            margin: 100px;
-        }
-        
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+      #table_div {
+        display: none;
+        font-size: x-large;
+        margin: 5px;
+        height: 80vh;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
     </style>
     <script>
-        let data;
-        let options;
-        let chart;
-        let chartId;
-        let rho;
-        let av_cust_s;
-        let av_cust_q;
-        let time;
-        let cust;
-        let ar;
-        let sr;
-        let ns;
-        let end_times;
-        let start_times;
-        let av_time_s;
-        let cust_total;
-        let av_st;
-        let busy_servers;
+      let data;
+      let options;
+      let chart;
+      let chartId;
+      let rho;
+      let av_cust_s;
+      let av_cust_q;
+      let time;
+      let cust;
+      let ar;
+      let sr;
+      let ns;
+      let end_times;
+      let start_times;
+      let av_time_s;
+      let cust_total;
+      let av_st;
+      let busy_servers;
 
-        class Queue {
-            constructor() {
-                this.elements = {};
-                this.head = 0;
-                this.tail = 0;
-            }
-            enqueue(element) {
-                this.elements[this.tail] = element;
-                this.tail++;
-            }
-            dequeue() {
-                const item = this.elements[this.head];
-                delete this.elements[this.head];
-                this.head++;
-                return item;
-            }
-            peek() {
-                return this.elements[this.head];
-            }
-            get length() {
-                return this.tail - this.head;
-            }
-            get isEmpty() {
-                return this.length === 0;
-            }
+      class Queue {
+        constructor() {
+          this.elements = {};
+          this.head = 0;
+          this.tail = 0;
         }
-
-        window.onload = function() {
-            google.charts.load("current", {
-                packages: ["corechart"]
-            });
-
-            google.charts.setOnLoadCallback(drawChart);
-
-            function drawChart() {
-
-                data = google.visualization.arrayToDataTable([
-                    ["Time", "Customers"],
-                    [0, 0]
-                ]);
-
-                options = {
-                    title: "No. of Customers in System vs Time",
-                    width: "100%",
-                    height: 900,
-                    hAxis: {
-                        title: "Time"
-                    },
-                    vAxis: {
-                        title: "Customers"
-                    },
-                    chartArea: {'width': '80%', 'height': '80%'},
-                    legend: {'position': 'bottom'}
-                };
-
-                chart = new google.visualization.LineChart(
-                    document.getElementById("chart_div")
-                );
-
-                chart.draw(data, options);
-            }
+        enqueue(element) {
+          this.elements[this.tail] = element;
+          this.tail++;
         }
-        function factorial(n) {
-            let answer = 1;
-            if (n == 0 || n == 1){
-                return answer;
-            }else{
-                for(var i = n; i >= 1; i--){
-                answer = answer * i;
+        dequeue() {
+          const item = this.elements[this.head];
+          delete this.elements[this.head];
+          this.head++;
+          return item;
+        }
+        peek() {
+          return this.elements[this.head];
+        }
+        get length() {
+          return this.tail - this.head;
+        }
+        get isEmpty() {
+          return this.length === 0;
+        }
+      }
+
+      window.onload = function () {
+        google.charts.load("current", {
+          packages: ["corechart"],
+        });
+
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+          data = google.visualization.arrayToDataTable([
+            ["Time", "Customers"],
+            [0, 0],
+          ]);
+
+          options = {
+            title: "No. of Customers in System vs Time",
+            width: "100%",
+            height: "100%",
+            hAxis: {
+              title: "Time",
+            },
+            vAxis: {
+              title: "Customers",
+            },
+            chartArea: { width: "80%", height: "80%" },
+            legend: { position: "bottom" },
+          };
+
+          chart = new google.visualization.LineChart(
+            document.getElementById("chart_div")
+          );
+
+          chart.draw(data, options);
+        }
+      };
+      function factorial(n) {
+        let answer = 1;
+        if (n == 0 || n == 1) {
+          return answer;
+        } else {
+          for (var i = n; i >= 1; i--) {
+            answer = answer * i;
+          }
+          return answer;
+        }
+      }
+
+      function startSimulation(arrival_rate, service_rate, num_servers, speed) {
+        clearChart();
+        let sTime = Number.MAX_VALUE;
+        let in_use = false;
+        if (!arrival_rate) arrival_rate = 1.0;
+        if (!service_rate) service_rate = 1.0;
+        rho = arrival_rate / (ns * service_rate);
+        ar = arrival_rate;
+        sr = service_rate;
+        ns = num_servers;
+        busy_servers = 0;
+        end_times = [];
+        start_times = [];
+        for (let i = 0; i < ns; i++) {
+          end_times[i] = Number.MAX_VALUE;
+          start_times[i] = Number.MAX_VALUE;
+        }
+        // Print number of servers
+        console.log(num_servers);
+
+        let U = Math.random();
+        let nextTime = -Math.log(U) / ar;
+        let q = new Queue();
+        chartId = setInterval(function () {
+          /* stime = service time end, nextTime  = next arrival time*/
+          /*Departure*/
+          if (sTime < nextTime) {
+            av_cust_s += cust * (sTime - time);
+            av_cust_q += Math.max(0, cust - ns) * (sTime - time);
+            time = sTime;
+            data.addRow([time, cust]);
+            let idx = -1;
+            for (let i = 0; i < ns; i++) {
+              if (end_times[i] == sTime) {
+                idx = i;
+                break;
+              }
+            }
+            av_time_s += time - start_times[idx];
+            cust--;
+            if (q.isEmpty) {
+              start_times[idx] = Number.MAX_VALUE;
+              end_times[idx] = Number.MAX_VALUE;
+              busy_servers--;
+            } else {
+              start_times[idx] = q.dequeue();
+              U = Math.random();
+              end_times[idx] = time - Math.log(U) / sr;
+              av_st -= Math.log(U) / sr;
+            }
+            // update service end time
+            sTime = end_times[0];
+            for (let i = 1; i < ns; i++) {
+              sTime = Math.min(sTime, end_times[i]);
+            }
+          } else {
+            // Arrival occurs here
+            av_cust_s += cust * (nextTime - time);
+            av_cust_q += Math.max(0, cust - ns) * (nextTime - time);
+            time = nextTime;
+            data.addRow([time, cust]);
+            cust++;
+            cust_total++;
+            console.log("Arrival occured");
+            console.log(busy_servers);
+            console.log(sTime);
+            console.log(end_times);
+
+            if (busy_servers == ns) {
+              q.enqueue(time);
+            } else {
+              let idx = -1;
+              for (let i = 0; i < ns; i++) {
+                if (end_times[i] == Number.MAX_VALUE) {
+                  idx = i;
+                  break;
                 }
-                return answer;
-            }  
-        }
+              }
+              console.log(idx);
+              start_times[idx] = time;
+              U = Math.random();
+              end_times[idx] = time - Math.log(U) / sr;
+              av_st -= Math.log(U) / sr;
+              busy_servers++;
 
-        function startSimulation(arrival_rate, service_rate, num_servers, speed) {
-            clearChart();
-            let sTime = Number.MAX_VALUE;
-            let in_use = false;
-            if(!arrival_rate) arrival_rate = 1.0;
-            if(!service_rate) service_rate = 1.0;
-            rho = arrival_rate/(ns*service_rate);
-            ar = arrival_rate;
-            sr = service_rate;
-            ns = num_servers;
-            busy_servers = 0;
-            end_times = [];
-            start_times = [];
-            for(let i = 0; i<ns; i++) {
-                end_times[i] = Number.MAX_VALUE;
-                start_times[i] = Number.MAX_VALUE;
+              sTime = end_times[0];
+              for (let i = 1; i < ns; i++) {
+                sTime = Math.min(sTime, end_times[i]);
+              }
             }
-            // Print number of servers
-            console.log(num_servers);
+            U = Math.random();
+            nextTime = time - Math.log(U) / ar;
+          }
+          data.addRow([time, cust]);
+          chart.draw(data, options);
+        }, 2010 - speed);
+      }
 
-            let U = Math.random();
-            let nextTime = -Math.log(U)/ar;
-            let q = new Queue();
-            chartId = setInterval(function() {
-                /* stime = service time end, nextTime  = next arrival time*/
-                /*Departure*/
-                if(sTime<nextTime) {
-                    av_cust_s += (cust * (sTime - time));
-                    av_cust_q += (Math.max(0, (cust - ns)) * (sTime - time)); 
-                    time = sTime;
-                    data.addRow([time, cust]);
-                    let idx = -1;
-                    for(let i = 0; i<ns; i++) {
-                        if(end_times[i] == sTime) {
-                            idx = i;
-                            break;
-                        }
-                    }
-                    av_time_s+=(time - start_times[idx]);
-                    cust--;
-                    if(q.isEmpty) {
-                        start_times[idx] = Number.MAX_VALUE;
-                        end_times[idx] = Number.MAX_VALUE;
-                        busy_servers--;
-                    } else {
-                        start_times[idx] = q.dequeue();
-                        U = Math.random();
-                        end_times[idx] = time - (Math.log(U))/sr;
-                        av_st -= (Math.log(U))/sr;
-                    }
-                    // update service end time
-                    sTime = end_times[0];
-                    for(let i = 1; i<ns; i++) {
-                        sTime = Math.min(sTime, end_times[i]);
-                    }
-
-                } 
-                else {
-                    // Arrival occurs here
-                    av_cust_s += (cust * (nextTime - time));
-                    av_cust_q += (Math.max(0, (cust - ns)) * (nextTime - time));
-                    time = nextTime;
-                    data.addRow([time, cust]);
-                    cust++;
-                    cust_total++;
-                    console.log("Arrival occured");
-                    console.log(busy_servers);
-                    console.log(sTime);
-                    console.log(end_times);
-
-                    if(busy_servers==ns) {
-                        q.enqueue(time);
-                    } else {
-                        let idx = -1;
-                        for(let i = 0; i<ns; i++) {
-                            if(end_times[i] == Number.MAX_VALUE) {
-                                idx = i;
-                                break;
-                            }
-                        }
-                        console.log(idx);
-                        start_times[idx] = time;
-                        U = Math.random();
-                        end_times[idx] = time - (Math.log(U))/sr;
-                        av_st -= (Math.log(U))/sr;
-                        busy_servers++;
-
-                        sTime = end_times[0];
-                        for(let i = 1; i<ns; i++) {
-                            sTime = Math.min(sTime, end_times[i]);
-                        }
-                    }
-                    U = Math.random();
-                    nextTime = time - (Math.log(U)/ar);
-                }
-                data.addRow([time, cust]);
-                chart.draw(data, options);
-            }, 2010 - speed);
+      function drawTable() {
+        document.getElementById("table_div").style.width = "40vw";
+        document.getElementById("chart_div").style.width = "40vw";
+        chart.draw(data, options);
+        document.getElementById("table_div").style.display = "block";
+        let t0 = 0.0;
+        for (let i = 0; i < ns; i++) {
+          t0 += Math.pow(ar / sr, i) / factorial(i);
         }
+        // console.log(t0);
+        // let pow0 = 1;
+        // for(let i = ns; i<100; i++) {
+        //     pow0*=ns;
+        // }
+        console.log(t0);
+        let pa1 =
+          (Math.pow(ns, ns) / factorial(ns)) *
+          (Math.pow(ar / (ns * sr), ns) / (1 - ar / (ns * sr)));
+        console.log(Math.pow(ns, ns) / factorial(ns));
+        console.log(Math.pow(ar / (ns * sr), ns) / (1 - ar / (ns * sr)));
+        console.log(pa1);
 
-        function drawTable() {
-            document.getElementById("table_div").style.display = "block";
-            let t0 = 0.0;
-            for(let i = 0; i<ns; i++) {
-                t0 += Math.pow(ar/sr, i)/factorial(i);
-            }
-            // console.log(t0);
-            // let pow0 = 1;
-            // for(let i = ns; i<100; i++) {
-            //     pow0*=ns;
-            // }
-            console.log(t0);
-            let pa1 = (Math.pow(ns, ns)/factorial(ns))*(Math.pow(ar/(ns*sr), ns)/(1-(ar/(ns*sr))));
-            console.log((Math.pow(ns, ns)/factorial(ns)));
-            console.log(Math.pow(ar/(ns*sr), ns)/(1-(ar/(ns*sr))));
-            console.log(pa1);
+        t0 += pa1;
+        console.log(t0);
 
-            t0+= pa1;
-            console.log(t0);
+        let tmp1 = ar / (ns * sr);
+        let P0 = 1 / t0;
+        console.log(P0);
+        let t1 = P0 * Math.pow(ar, ns) * tmp1;
+        let t2 = factorial(ns) * (1 - tmp1) * (1 - tmp1) * Math.pow(sr, ns);
+        console.log(Math.pow(ar, ns) * tmp1);
+        console.log(t1);
+        console.log(t2);
+        let Lq = t1 / t2;
+        console.log(Lq);
+        // let Lq = t1/(factorial(ns)*Math.pow(1-rho, 2));
+        let Tq = Lq / ar;
+        let Ts = Tq + 1 / ar;
+        let Ls = Lq + ar / sr;
+        console.log(P0);
+        console.log(Lq);
 
-            let tmp1 = ar/(ns*sr);
-            let P0 = 1/t0;
-            console.log(P0);
-            let t1 = P0*Math.pow(ar, ns)*tmp1;
-            let t2 = factorial(ns)*(1-tmp1)*(1-tmp1)*Math.pow(sr, ns)
-            console.log(Math.pow(ar, ns)*tmp1);
-            console.log(t1);
-            console.log(t2);
-            let Lq = t1/t2;
-            console.log(Lq);
-            // let Lq = t1/(factorial(ns)*Math.pow(1-rho, 2));
-            let Tq = Lq/ar;
-            let Ts = Tq + (1/ar)
-            let Ls = Lq + (ar/sr);
-            console.log(P0);
-            console.log(Lq);
+        let th_cs = Ls;
+        let ex_cs = av_cust_s / time;
+        let th_cq = Lq;
+        let ex_cq = av_cust_q / time;
+        let ex_st = av_st / (cust_total - cust + busy_servers);
+        document.getElementById("th_cs").innerHTML = th_cs.toFixed(2);
+        document.getElementById("ex_cs").innerHTML = ex_cs.toFixed(2);
+        document.getElementById("th_cq").innerHTML = th_cq.toFixed(2);
+        document.getElementById("ex_cq").innerHTML = ex_cq.toFixed(2);
+        document.getElementById("th_ts").innerHTML = (th_cs / ar).toFixed(2);
+        document.getElementById("ex_ts").innerHTML = (
+          av_time_s / cust_total
+        ).toFixed(2);
+        document.getElementById("th_st").innerHTML = (1 / sr).toFixed(2);
+        document.getElementById("ex_st").innerHTML = ex_st.toFixed(2);
+        document.getElementById("ex").innerHTML = "Experimental (" + time.toFixed(2) + ")";
+      }
 
-            let th_cs = Ls;
-            let ex_cs = av_cust_s/time;
-            let th_cq = Lq;
-            let ex_cq = av_cust_q/time;
-            let ex_st = av_st/(cust_total - cust + busy_servers);
-            document.getElementById("th_cs").innerHTML = th_cs.toFixed(2);
-            document.getElementById("ex_cs").innerHTML = ex_cs.toFixed(2);
-            document.getElementById("th_cq").innerHTML = th_cq.toFixed(2);
-            document.getElementById("ex_cq").innerHTML = ex_cq.toFixed(2);
-            document.getElementById("th_ts").innerHTML = (th_cs/ar).toFixed(2);
-            document.getElementById("ex_ts").innerHTML = (av_time_s/cust_total).toFixed(2);
-            document.getElementById("th_st").innerHTML = (1/sr).toFixed(2);
-            document.getElementById("ex_st").innerHTML = ex_st.toFixed(2);
+      function stopSimulation() {
+        clearInterval(chartId);
+        drawTable();
+      }
+
+      function clearChart() {
+        document.getElementById("table_div").style.display = "none";
+        if (chartId) clearInterval(chartId);
+        data = google.visualization.arrayToDataTable([
+          ["Time", "Customers"],
+          [0, 0],
+        ]);
+        chart.draw(data, options);
+        cust = 0;
+        time = 0;
+        av_cust_q = 0;
+        av_cust_s = 0;
+        av_time_s = 0;
+        cust_total = 0;
+        av_st = 0;
+        busy_servers = 0;
+        end_times = [];
+        start_times = [];
+        for (let i = 0; i < ns; i++) {
+          end_times[i] = Number.MAX_VALUE;
+          start_times[i] = Number.MAX_VALUE;
         }
-
-        function stopSimulation() {
-            clearInterval(chartId);
-            drawTable();
-        }
-
-        function clearChart() {
-            document.getElementById("table_div").style.display = "none";
-            if(chartId) clearInterval(chartId);
-            data = google.visualization.arrayToDataTable([
-                    ["Time", "Customers"],
-                    [0, 0]
-                ]);
-            chart.draw(data, options);
-            cust = 0;
-            time = 0;
-            av_cust_q = 0;
-            av_cust_s = 0;
-            av_time_s = 0;
-            cust_total = 0;
-            av_st = 0;
-            busy_servers = 0;
-            end_times = [];
-            start_times = [];
-            for(let i = 0; i<ns; i++) {
-                end_times[i] = Number.MAX_VALUE;
-                start_times[i] = Number.MAX_VALUE;
-            }
-        }
+      }
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="topnav">
-        <span>Virtual Lab</span>
-        <a href="#">M/M/1</a>
-        <a class="active" href="#news">M/M/c</a>
-        <a href="#">M/M/1/N</a>
-      </div>
-    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <h2>Experiment 2</h2>
+      <span>Virtual Lab</span>
+      <a href="index.html">M/M/1</a>
+      <a class="active" href="#news">M/M/c</a>
+      <a href="#">M/M/1/N</a>
     </div>
-    <div class="form-group" style="border: 1px solid black; margin: 10px; padding: 15px; width: 400px;">
-        <label for="ar">Mean Arrivel Rate:</label>
-        <input class="form-control" type="number" id="ar" step="0.01">
-        <br>
-        <label for="sr">Mean Service Rate:</label>
-        <input class="form-control" type="number" id="sr" step="0.01">
-        <br>
-        <label for="ns">Number of Servers:</label>
-        <input class="form-control" type="number" id="ns" step="1">
-        <br>
-        <label for="slider" class="form-label">Simulation speed: </label>
-        <input type="range" class="form-range" id="slider" min="10" max="2000" value="1000">
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      "
+    >
+      <h2>Experiment 2</h2>
     </div>
-    <div style="margin-top: 50px;">
-        <button onclick="startSimulation(document.getElementById('ar').value, document.getElementById('sr').value, document.getElementById('ns').value, document.getElementById('slider').value)" class="btn btn-primary">Start</button>
-        <button onclick="stopSimulation()" class="btn btn-primary">Stop</button>
-        <button onclick="clearChart()" class="btn btn-primary">Clear</button>
+    <div
+      class="form-group"
+      style="border: 1px solid black; margin: 10px; padding: 15px; width: 400px"
+    >
+      <label for="ar">Mean Arrivel Rate:</label>
+      <input class="form-control" type="number" id="ar" step="0.01" />
+      <br />
+      <label for="sr">Mean Service Rate:</label>
+      <input class="form-control" type="number" id="sr" step="0.01" />
+      <br />
+      <label for="ns">Number of Servers:</label>
+      <input class="form-control" type="number" id="ns" step="1" />
+      <br />
+      <label for="slider" class="form-label">Simulation speed: </label>
+      <input
+        type="range"
+        class="form-range"
+        id="slider"
+        min="10"
+        max="2000"
+        value="1000"
+      />
     </div>
-    <div id="chart_div"></div>
-    <div class="table-responsive" id="table_div">
-        <table class="table table-striped text-successtable-border border-light">
+    <div style="margin-top: 50px">
+      <button
+        onclick="startSimulation(document.getElementById('ar').value, document.getElementById('sr').value, document.getElementById('ns').value, document.getElementById('slider').value)"
+        class="btn btn-primary"
+      >
+        Start
+      </button>
+      <button onclick="stopSimulation()" class="btn btn-primary">Stop</button>
+      <button onclick="clearChart()" class="btn btn-primary">Clear</button>
+    </div>
+    <div style="display: flex; flex-direction: row">
+      <div id="chart_div"></div>
+      <div class="table-responsive" id="table_div">
+        <table
+          class="table table-striped text-successtable-border border-light"
+        >
           <thead class="border-light">
             <tr>
               <th scope="col"></th>
               <th scope="col"><strong>Theoretical</strong></th>
-              <th scope="col"><strong>Experimental</strong></th>
+              <th scope="col" id ="ex"><strong></strong></th>
             </tr>
           </thead>
           <tbody>
@@ -404,7 +438,10 @@
           </tbody>
         </table>
       </div>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-</body>
-
+    </div>
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+  </body>
 </html>

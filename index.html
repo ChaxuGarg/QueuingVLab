@@ -50,12 +50,14 @@
 
         #chart_div {
             width: 100vw;
+            height: 80vh;
         }
 
         #table_div {
             display: none;
-            font-size: xx-large;
-            margin: 100px;
+            font-size: x-large;
+            margin: 5px;
+            height: 80vh;
         }
         
         body {
@@ -125,7 +127,7 @@
                 options = {
                     title: "No. of Customers in System vs Time",
                     width: "100%",
-                    height: 900,
+                    height: "100%",
                     hAxis: {
                         title: "Time"
                     },
@@ -194,12 +196,19 @@
         }
 
         function drawTable() {
+            document.getElementById("table_div").style.width = "40vw";
+            document.getElementById("chart_div").style.width = "40vw";
+            chart.draw(data, options);
             document.getElementById("table_div").style.display = "block";
             let th_cs = rho/(1-rho);
             let ex_cs = av_cust_s/time;
             let th_cq = th_cs*rho;
             let ex_cq = av_cust_q/time;
             let ex_st = av_st/(cust_total - cust + 1);
+            if(rho >= 1) {
+                th_cs = NaN;
+                th_cq = NaN;
+            }
             document.getElementById("th_cs").innerHTML = th_cs.toFixed(2);
             document.getElementById("ex_cs").innerHTML = ex_cs.toFixed(2);
             document.getElementById("th_cq").innerHTML = th_cq.toFixed(2);
@@ -208,6 +217,7 @@
             document.getElementById("ex_ts").innerHTML = (av_time_s/cust_total).toFixed(2);
             document.getElementById("th_st").innerHTML = (1/sr).toFixed(2);
             document.getElementById("ex_st").innerHTML = ex_st.toFixed(2);
+            document.getElementById("ex").innerHTML = "Experimental (" + time.toFixed(2) + ")";
         }
 
         function stopSimulation() {
@@ -259,39 +269,41 @@
         <button onclick="stopSimulation()" class="btn btn-primary">Stop</button>
         <button onclick="clearChart()" class="btn btn-primary">Clear</button>
     </div>
-    <div id="chart_div"></div>
-    <div class="table-responsive" id="table_div">
-        <table class="table table-striped text-successtable-border border-light">
-          <thead class="border-light">
-            <tr>
-              <th scope="col"></th>
-              <th scope="col"><strong>Theoretical</strong></th>
-              <th scope="col"><strong>Experimental</strong></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Avg. No. of Customers in System</th>
-              <td id="th_cs"></td>
-              <td id="ex_cs"></td>
-            </tr>
-            <tr>
-              <th scope="row">Avg. No. of Customers in Queue</th>
-              <td id="th_cq"></td>
-              <td id="ex_cq"></td>
-            </tr>
-            <tr>
-              <th scope="row">Avg. Time Spent in System</th>
-              <td id="th_ts"></td>
-              <td id="ex_ts"></td>
-            </tr>
-            <tr>
-              <th scope="row">Avg. Service Time</th>
-              <td id="th_st"></td>
-              <td id="ex_st"></td>
-            </tr>
-          </tbody>
-        </table>
+    <div style="display: flex; flex-direction: row;">
+        <div id="chart_div"></div>
+        <div class="table-responsive" id="table_div">
+            <table class="table table-striped text-successtable-border border-light">
+            <thead class="border-light">
+                <tr>
+                <th scope="col"></th>
+                <th scope="col"><strong>Theoretical</strong></th>
+                <th scope="col"><strong id="ex"></strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <th scope="row">Avg. No. of Customers in System</th>
+                <td id="th_cs"></td>
+                <td id="ex_cs"></td>
+                </tr>
+                <tr>
+                <th scope="row">Avg. No. of Customers in Queue</th>
+                <td id="th_cq"></td>
+                <td id="ex_cq"></td>
+                </tr>
+                <tr>
+                <th scope="row">Avg. Time Spent in System</th>
+                <td id="th_ts"></td>
+                <td id="ex_ts"></td>
+                </tr>
+                <tr>
+                <th scope="row">Avg. Service Time</th>
+                <td id="th_st"></td>
+                <td id="ex_st"></td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
       </div>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </body>

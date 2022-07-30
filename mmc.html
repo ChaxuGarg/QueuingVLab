@@ -327,6 +327,7 @@
 
       function clearChart() {
         document.getElementById("table_div").style.display = "none";
+        document.getElementById("chart_div").style.width = "100vw";
         if (chartId) clearInterval(chartId);
         data = google.visualization.arrayToDataTable([
           ["Time", "Customers"],
@@ -355,8 +356,8 @@
     <div class="topnav">
       <span>Virtual Lab</span>
       <a href="index.html">M/M/1</a>
-      <a class="active" href="#news">M/M/c</a>
-      <a href="#">M/M/1/N</a>
+      <a class="active" href="#">M/M/c</a>
+      <a href="mm1n.html">M/M/1/N</a>
       <a href="mmcn.html">M/M/c/N</a>
     </div>
     <div

@@ -81,7 +81,7 @@
       let cust;
       let ar;
       let sr;
-      let ns;
+      let ns = 1;
       let end_times;
       let start_times;
       let av_time_s;
@@ -164,7 +164,7 @@
         }
       }
 
-      function startSimulation(arrival_rate, service_rate, num_servers, max_customers, speed) {
+      function startSimulation(arrival_rate, service_rate, max_customers, speed) {
         clearChart();
         let sTime = Number.MAX_VALUE;
         let in_use = false;
@@ -173,7 +173,6 @@
         rho = arrival_rate / (ns * service_rate);
         ar = arrival_rate;
         sr = service_rate;
-        ns = num_servers;
         mc = max_customers;
         busy_servers = 0;
         end_times = [];
@@ -182,8 +181,6 @@
           end_times[i] = Number.MAX_VALUE;
           start_times[i] = Number.MAX_VALUE;
         }
-        // Print number of servers
-        console.log(num_servers);
 
         let U = Math.random();
         let nextTime = -Math.log(U) / ar;
@@ -376,8 +373,8 @@
       <span>Virtual Lab</span>
       <a href="index.html">M/M/1</a>
       <a href="mmc.html">M/M/c</a>
-      <a href="mm1n.html">M/M/1/N</a>
-      <a class="active" href="#">M/M/c/N</a>
+      <a href="#" class="active">M/M/1/N</a>
+      <a href="mmcn.html">M/M/c/N</a>
     </div>
     <div
       style="
@@ -387,7 +384,7 @@
         flex-direction: column;
       "
     >
-      <h2>Experiment 4</h2>
+      <h2>Experiment 3</h2>
     </div>
     <div
       class="form-group"
@@ -398,9 +395,6 @@
       <br />
       <label for="sr">Mean Service Rate:</label>
       <input class="form-control" type="number" id="sr" step="0.01" />
-      <br />
-      <label for="ns">Number of Servers:</label>
-      <input class="form-control" type="number" id="ns" step="1" />
       <br />
       <label for="mc">Maximum customers in System:</label>
       <input class="form-control" type="number" id="mc" step="1" />
@@ -417,7 +411,7 @@
     </div>
     <div style="margin-top: 50px">
       <button
-        onclick="startSimulation(document.getElementById('ar').value, document.getElementById('sr').value, document.getElementById('ns').value, document.getElementById('mc').value, document.getElementById('slider').value)"
+        onclick="startSimulation(document.getElementById('ar').value, document.getElementById('sr').value, document.getElementById('mc').value, document.getElementById('slider').value)"
         class="btn btn-primary"
       >
         Start

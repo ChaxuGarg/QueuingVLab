@@ -205,19 +205,22 @@
             let th_cq = th_cs*rho;
             let ex_cq = av_cust_q/time;
             let ex_st = av_st/(cust_total - cust + 1);
+            let th_ts = (th_cs/ar);
+            let ex_ts = (av_time_s/cust_total);
+            let th_st = (1/sr);
             if(rho >= 1) {
                 th_cs = NaN;
                 th_cq = NaN;
             }
-            document.getElementById("th_cs").innerHTML = th_cs.toFixed(2);
-            document.getElementById("ex_cs").innerHTML = ex_cs.toFixed(2);
-            document.getElementById("th_cq").innerHTML = th_cq.toFixed(2);
-            document.getElementById("ex_cq").innerHTML = ex_cq.toFixed(2);
-            document.getElementById("th_ts").innerHTML = (th_cs/ar).toFixed(2);
-            document.getElementById("ex_ts").innerHTML = (av_time_s/cust_total).toFixed(2);
-            document.getElementById("th_st").innerHTML = (1/sr).toFixed(2);
-            document.getElementById("ex_st").innerHTML = ex_st.toFixed(2);
-            document.getElementById("ex").innerHTML = "Experimental (" + time.toFixed(2) + ")";
+            document.getElementById("th_cs").innerHTML = ((th_cs>=0 && th_cs!=NaN)? th_cs.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("ex_cs").innerHTML = ((ex_cs>=0 && ex_cs!=NaN)? ex_cs.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("th_cq").innerHTML = ((th_cq>=0 && th_cq!=NaN)? th_cq.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("ex_cq").innerHTML = ((ex_cq>=0 && ex_cq!=NaN)? ex_cq.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("th_ts").innerHTML = ((th_ts>=0 && th_ts!=NaN)? th_ts.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("ex_ts").innerHTML = ((ex_ts>=0 && ex_ts!=NaN)? ex_ts.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("th_st").innerHTML = ((th_st>=0 && th_st!=NaN)? th_st.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("ex_st").innerHTML = ((ex_st>=0 && ex_st!=NaN)? ex_st.toFixed(2): "The value is not applicable for given inputs");
+            document.getElementById("ex").innerHTML = "Experimental (" + ((time.toFixed(2)>=0)?time.toFixed(2):"Time for simulation cannot be generated for given inputs") + ")";
         }
 
         function stopSimulation() {
@@ -258,10 +261,10 @@
     </div>
     <div class="form-group" style="border: 1px solid black; margin: 10px; padding: 15px; width: 400px;">
         <label for="ar">Mean Arrival Rate:</label>
-        <input class="form-control" type="number" id="ar" step="0.01">
+        <input class="form-control" type="number" id="ar" step="0.01" min="0.00" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null">
         <br>
         <label for="sr">Mean Service Rate:</label>
-        <input class="form-control" type="number" id="sr" step="0.01">
+        <input class="form-control" type="number" id="sr" step="0.01" min="0.00" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null">
         <br>
         <label for="slider" class="form-label">Simulation speed: </label>
         <input type="range" class="form-range" id="slider" min="10" max="2000" value="1000">

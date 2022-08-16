@@ -114,7 +114,7 @@
           return this.tail - this.head;
         }
         get isEmpty() {
-          return this.length === 0;
+          return this.length == 0;
         }
       }
 
@@ -325,17 +325,27 @@
         let th_cq = Lq;
         let ex_cq = av_cust_q / time;
         let ex_st = av_st / (cust_total - cust + busy_servers);
-        document.getElementById("th_cs").innerHTML = th_cs.toFixed(2);
-        document.getElementById("ex_cs").innerHTML = ex_cs.toFixed(2);
-        document.getElementById("th_cq").innerHTML = th_cq.toFixed(2);
-        document.getElementById("ex_cq").innerHTML = ex_cq.toFixed(2);
-        document.getElementById("th_ts").innerHTML = (th_cs / ar).toFixed(2);
-        document.getElementById("ex_ts").innerHTML = (
-          av_time_s / cust_total
-        ).toFixed(2);
-        document.getElementById("th_st").innerHTML = (1 / sr).toFixed(2);
-        document.getElementById("ex_st").innerHTML = ex_st.toFixed(2);
-        document.getElementById("ex").innerHTML = "Experimental (" + time.toFixed(2) + ")";
+        let th_ts = th_cs / ar;
+        let ex_ts = av_time_s / cust_total;
+        let th_st = (1 / sr);
+
+
+        if(ar>=ns*sr) {
+            th_cs = NaN;
+            th_cq = NaN;
+            th_ts = NaN;
+            th_st = NaN;
+        }
+        
+        document.getElementById("th_cs").innerHTML = ((th_cs>=0 && th_cs!=NaN)? th_cs.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("ex_cs").innerHTML = ((ex_cs>=0 && ex_cs!=NaN)? ex_cs.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("th_cq").innerHTML = ((th_cq>=0 && th_cq!=NaN)? th_cq.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("ex_cq").innerHTML = ((ex_cq>=0 && ex_cq!=NaN)? ex_cq.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("th_ts").innerHTML = ((th_ts>=0 && th_ts!=NaN)? th_ts.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("ex_ts").innerHTML = ((ex_ts>=0 && ex_ts!=NaN)? ex_ts.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("th_st").innerHTML = ((th_st>=0 && th_st!=NaN)? th_st.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("ex_st").innerHTML = ((ex_st>=0 && ex_st!=NaN)? ex_st.toFixed(2): "The value is not applicable for given inputs");
+        document.getElementById("ex").innerHTML = "Experimental (" + ((time.toFixed(2)>=0)?time.toFixed(2):"Time for simulation cannot be generated for given inputs") + ")";
       }
 
       function stopSimulation() {
@@ -394,16 +404,16 @@
       style="border: 1px solid black; margin: 10px; padding: 15px; width: 400px"
     >
       <label for="ar">Mean Arrival Rate:</label>
-      <input class="form-control" type="number" id="ar" step="0.01" />
+      <input class="form-control" type="number" id="ar" step="0.01"  min="0.00" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
       <br />
       <label for="sr">Mean Service Rate:</label>
-      <input class="form-control" type="number" id="sr" step="0.01" />
+      <input class="form-control" type="number" id="sr" step="0.01"  min="0.00" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
       <br />
       <label for="ns">Number of Servers:</label>
-      <input class="form-control" type="number" id="ns" step="1" />
+      <input class="form-control" type="number" id="ns" step="1"  min="0" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
       <br />
       <label for="mc">Maximum customers in System:</label>
-      <input class="form-control" type="number" id="mc" step="1" />
+      <input class="form-control" type="number" id="mc" step="1"  min="0" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
       <br />
       <label for="slider" class="form-label">Simulation speed: </label>
       <input

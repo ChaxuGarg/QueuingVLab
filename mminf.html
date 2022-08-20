@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Experiment 4</title>
+    <title>Experiment 1</title>
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
@@ -81,41 +81,64 @@
       let cust;
       let ar;
       let sr;
-      let ns = 1;
-      let end_times;
-      let start_times;
       let av_time_s;
       let cust_total;
       let av_st;
-      let busy_servers;
-      let mc;
-      let blocked;
 
-      class Queue {
-        constructor() {
-          this.elements = {};
-          this.head = 0;
-          this.tail = 0;
+      class QElement {
+        constructor(element, priority) {
+          this.element = element;
+          this.priority = priority;
         }
-        enqueue(element) {
-          this.elements[this.tail] = element;
-          this.tail++;
+      }
+
+      // PriorityQueue class
+      class PriorityQueue {
+        // An array is used to implement priority
+        constructor() {
+          this.items = [];
+        }
+
+        // functions to be implemented
+        enqueue(element, priority) {
+          var qElement = new QElement(element, priority);
+          var contain = false;
+
+          // iterating through the entire
+          // item array to add element at the
+          // correct location of the Queue
+          for (var i = 0; i < this.items.length; i++) {
+            if (this.items[i].priority > qElement.priority) {
+              // Once the correct location is found it is
+              // enqueued
+              this.items.splice(i, 0, qElement);
+              contain = true;
+              break;
+            }
+          }
+
+          // if the element have the highest priority
+          // it is added at the end of the queue
+          if (!contain) {
+            this.items.push(qElement);
+          }
         }
         dequeue() {
-          const item = this.elements[this.head];
-          delete this.elements[this.head];
-          this.head++;
-          return item;
+          if (this.isEmpty()) return ;
+          return this.items.shift();
         }
-        peek() {
-          return this.elements[this.head];
+        front() {
+          if (this.isEmpty()) return;
+          return this.items[0].priority;
         }
-        get length() {
-          return this.tail - this.head;
+        isEmpty() {
+            return this.items.length == 0;
         }
-        get isEmpty() {
-          return this.length === 0;
+
+        size() {
+            return this.items.length;
         }
+        // printPQueue()
       }
 
       window.onload = function () {
@@ -152,20 +175,9 @@
           chart.draw(data, options);
         }
       };
-      function factorial(n) {
-        let answer = 1;
-        if (n == 0 || n == 1) {
-          return answer;
-        } else {
-          for (var i = n; i >= 1; i--) {
-            answer = answer * i;
-          }
-          return answer;
-        }
-      }
 
-      function check(a, b, c) {
-        if (a == "" || b == "" || c == "") {
+      function check(a, b) {
+        if (a == "" || b == "") {
           alert("Values cannot be empty");
           return false;
         }
@@ -177,120 +189,48 @@
           alert("Service rate should be positive");
           return false;
         }
-        if (parseFloat(c) != parseInt(c)) {
-          alert("Maximum Customers should be an integer");
-          return false;
-        }
-        if (parseFloat(c) <= 0) {
-          alert("Maximum Customers should be positive");
-          return false;
-        }
         return true;
       }
 
-      function startSimulation(
-        arrival_rate,
-        service_rate,
-        max_customers,
-        speed
-      ) {
-        let valid = check(arrival_rate, service_rate, max_customers);
+      function startSimulation(arrival_rate, service_rate, speed) {
+        let valid = check(arrival_rate, service_rate);
         if (!valid) return;
         clearChart();
-        let sTime = Number.MAX_VALUE;
+        console.log(arrival_rate);
+        console.log(service_rate);
+        let sTime = 0;
         let in_use = false;
         if (!arrival_rate) arrival_rate = 1.0;
         if (!service_rate) service_rate = 1.0;
-        rho = arrival_rate / (ns * service_rate);
+        rho = arrival_rate / service_rate;
         ar = arrival_rate;
         sr = service_rate;
-        mc = max_customers;
-        busy_servers = 0;
-        end_times = [];
-        start_times = [];
-        for (let i = 0; i < ns; i++) {
-          end_times[i] = Number.MAX_VALUE;
-          start_times[i] = Number.MAX_VALUE;
-        }
-
         let U = Math.random();
         let nextTime = -Math.log(U) / ar;
-        let q = new Queue();
+        let aq = new PriorityQueue();
+        let sq = new PriorityQueue();
+        cust_total = 0;
+        aq.enqueue(1, nextTime);
         chartId = setInterval(function () {
-          /* stime = service time end, nextTime  = next arrival time*/
-          /*Departure*/
-          if (sTime < nextTime) {
-            av_cust_s += cust * (sTime - time);
-            av_cust_q += Math.max(0, cust - ns) * (sTime - time);
-            time = sTime;
-            data.addRow([time, cust]);
-            let idx = -1;
-            for (let i = 0; i < ns; i++) {
-              if (end_times[i] == sTime) {
-                idx = i;
-                break;
-              }
-            }
-            av_time_s += time - start_times[idx];
-            cust--;
-            if (q.isEmpty) {
-              start_times[idx] = Number.MAX_VALUE;
-              end_times[idx] = Number.MAX_VALUE;
-              busy_servers--;
-            } else {
-              start_times[idx] = q.dequeue();
-              U = Math.random();
-              end_times[idx] = time - Math.log(U) / sr;
-              av_st -= Math.log(U) / sr;
-            }
-            // update service end time
-            sTime = end_times[0];
-            for (let i = 1; i < ns; i++) {
-              sTime = Math.min(sTime, end_times[i]);
-            }
+          if (!sq.isEmpty() && ((sq.front() < aq.front()) || aq.isEmpty())) {
+            time = sq.front();
+            data.addRow([time, sq.size() - 1]);
+            sq.dequeue();
+            cust_total++;
           } else {
-            // Arrival occurs here
-            av_cust_s += cust * (nextTime - time);
-            av_cust_q += Math.max(0, cust - ns) * (nextTime - time);
-            time = nextTime;
-            data.addRow([time, cust]);
-            if (cust < mc) {
-              cust++;
-              cust_total++;
-              console.log("Arrival occured");
-              console.log(busy_servers);
-              console.log(sTime);
-              console.log(end_times);
-
-              if (busy_servers == ns) {
-                q.enqueue(time);
-              } else {
-                let idx = -1;
-                for (let i = 0; i < ns; i++) {
-                  if (end_times[i] == Number.MAX_VALUE) {
-                    idx = i;
-                    break;
-                  }
-                }
-                console.log(idx);
-                start_times[idx] = time;
-                U = Math.random();
-                end_times[idx] = time - Math.log(U) / sr;
-                av_st -= Math.log(U) / sr;
-                busy_servers++;
-
-                sTime = end_times[0];
-                for (let i = 1; i < ns; i++) {
-                  sTime = Math.min(sTime, end_times[i]);
-                }
-              }
-            } else {
-              blocked++;
-            }
             U = Math.random();
-            nextTime = time - Math.log(U) / ar;
+            time = aq.front();
+            aq.dequeue();
+            data.addRow([time, sq.size() + 1]);
+            nextTime = time - Math.log(U)/sr;
+            sq.enqueue(1, nextTime);
+            av_cust_s += nextTime - time;
+            av_st += nextTime - time;
+            av_time_s += nextTime - time;
+            U = Math.random();
+            nextTime = time - Math.log(U)/ar;
+            aq.enqueue(1, nextTime);
           }
-          data.addRow([time, cust]);
           chart.draw(data, options);
         }, 2010 - speed);
       }
@@ -300,72 +240,15 @@
         document.getElementById("chart_div").style.width = "40vw";
         chart.draw(data, options);
         document.getElementById("table_div").style.display = "block";
-        rho = ar / (ns * sr);
-        let t0 = 0.0;
-        for (let i = 0; i < ns; i++) {
-          t0 += Math.pow(ar / sr, i) / factorial(i);
-        }
-        console.log(t0);
-        let pa1 = 0;
-        let tmp1 = ar / (ns * sr);
-        if (tmp1 != 1) {
-          let h1 = Math.pow(ar, ns) * (1 - Math.pow(tmp1, mc - ns + 1));
-          console.log("h1", h1);
-          let h2 = Math.pow(sr, ns) * factorial(ns) * (1 - tmp1);
-          pa1 = h1 / h2;
-        } else {
-          let h1 = Math.pow(ar, ns) * (mc - ns + 1);
-          console.log("h1", h1);
-          let h2 = Math.pow(sr, ns) * factorial(ns);
-          pa1 = h1 / h2;
-        }
-
-        // console.log(Math.pow(ns, ns) / factorial(ns));
-        // console.log(Math.pow(ar / (ns * sr), ns) / (1 - ar / (ns * sr)));
-        console.log(pa1);
-
-        t0 += pa1;
-        console.log(t0);
-
-        let P0 = 1 / t0;
-        console.log(P0);
-        let Pk = (Math.pow(ar, ns) * P0) / (factorial(ns) * Math.pow(sr, ns));
-
-        let t1 = P0 * Math.pow(ar, ns) * tmp1;
-        let t2 = factorial(ns) * (1 - tmp1) * (1 - tmp1) * Math.pow(sr, ns);
-        let t3 =
-          1 -
-          Math.pow(rho, mc - ns + 1) -
-          (1 - rho) * (mc - ns + 1) * Math.pow(rho, mc - ns);
-        console.log(Math.pow(ar, ns) * tmp1);
-        console.log(t1);
-        console.log(t2);
-        console.log(t3);
-        let Lq = (t1 * t3) / t2;
-        console.log(Lq);
-        let ar_eff = ar * (1 - Pk);
-        // let Lq = t1/(factorial(ns)*Math.pow(1-rho, 2));
-        let Tq = Lq / ar_eff;
-        let Ts = Tq + 1 / sr;
-        let Ls = Lq + ar_eff / sr;
-        console.log(P0);
-        console.log(Lq);
-
-        let th_cs = Ls;
+        let th_cs = rho;
         let ex_cs = av_cust_s / time;
-        let th_cq = Lq;
-        let ex_cq = av_cust_q / time;
-        let ex_st = av_st / (cust_total - cust + busy_servers);
-        let th_ts = th_cs / ar;
+        let th_cq = 0.0;
+        let ex_cq = 0.0;
+        let ex_st = av_st / (cust_total);
+        let th_ts = 1 / sr;
         let ex_ts = av_time_s / cust_total;
         let th_st = 1 / sr;
-
-        console.log(ar);
-        console.log(sr);
-        console.log(ar >= sr);
-
-        if (ar / sr >= 1) {
-          console.log("Hello");
+        if (ar >= sr) {
           document.getElementById("th_cs").innerHTML =
             "Steady state solution does not exist";
           document.getElementById("ex_cs").innerHTML =
@@ -397,7 +280,6 @@
               : "Time for simulation cannot be generated for given inputs") +
             ")";
         } else {
-          console.log("Hello22");
           document.getElementById("th_cs").innerHTML =
             th_cs >= 0 && th_cs != NaN
               ? th_cs.toFixed(2)
@@ -460,14 +342,6 @@
         av_time_s = 0;
         cust_total = 0;
         av_st = 0;
-        busy_servers = 0;
-        blocked = 0;
-        end_times = [];
-        start_times = [];
-        for (let i = 0; i < ns; i++) {
-          end_times[i] = Number.MAX_VALUE;
-          start_times[i] = Number.MAX_VALUE;
-        }
       }
     </script>
   </head>
@@ -476,9 +350,9 @@
     <div class="topnav">
       <span>Virtual Lab</span>
       <a href="index.html">M/M/1</a>
-      <a href="mminf.html">M/M/inf</a>
+      <a class="active" href="#">M/M/inf</a>
       <a href="mmc.html">M/M/c</a>
-      <a href="#" class="active">M/M/1/N</a>
+      <a href="mm1n.html">M/M/1/N</a>
       <a href="mmcn.html">M/M/c/N</a>
     </div>
     <div
@@ -489,20 +363,29 @@
         flex-direction: column;
       "
     >
-      <h2>Experiment 3</h2>
+      <h2>Experiment 1</h2>
     </div>
     <div
       class="form-group"
       style="border: 1px solid black; margin: 10px; padding: 15px; width: 400px"
     >
       <label for="ar">Mean Arrival Rate:</label>
-      <input class="form-control" type="number" id="ar" />
+      <input
+        class="form-control"
+        type="number"
+        id="ar"
+        step="0.01"
+        min="0.00"
+      />
       <br />
       <label for="sr">Mean Service Rate:</label>
-      <input class="form-control" type="number" id="sr" />
-      <br />
-      <label for="mc">Maximum customers in System:</label>
-      <input class="form-control" type="number" id="mc" />
+      <input
+        class="form-control"
+        type="number"
+        id="sr"
+        step="0.01"
+        min="0.00"
+      />
       <br />
       <label for="slider" class="form-label">Simulation speed: </label>
       <input
@@ -516,7 +399,7 @@
     </div>
     <div style="margin-top: 50px">
       <button
-        onclick="startSimulation(document.getElementById('ar').value, document.getElementById('sr').value, document.getElementById('mc').value, document.getElementById('slider').value)"
+        onclick="startSimulation(document.getElementById('ar').value, document.getElementById('sr').value, document.getElementById('slider').value)"
         class="btn btn-primary"
       >
         Start
@@ -534,7 +417,7 @@
             <tr>
               <th scope="col"></th>
               <th scope="col"><strong>Theoretical</strong></th>
-              <th scope="col" id="ex"><strong></strong></th>
+              <th scope="col"><strong id="ex"></strong></th>
             </tr>
           </thead>
           <tbody>

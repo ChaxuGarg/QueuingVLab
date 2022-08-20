@@ -162,7 +162,33 @@
         }
       }
 
+      function check(a, b, c) {
+        if (a == "" || b == "" || c == "") {
+          alert("Values cannot be empty");
+          return false;
+        }
+        if (parseFloat(a) <= 0) {
+          alert("Arrival rate should be positive");
+          return false;
+        }
+        if (parseFloat(b) <= 0) {
+          alert("Service rate should be positive");
+          return false;
+        }
+        if (parseFloat(c) != parseInt(c)) {
+          alert("Maximum Servers should be an integer");
+          return false;
+        }
+        if (parseFloat(c) <= 0) {
+          alert("Maximum Servers should be positive");
+          return false;
+        }
+        return true;
+      }
+
       function startSimulation(arrival_rate, service_rate, num_servers, speed) {
+        let valid = check(arrival_rate, service_rate, num_servers);
+        if (!valid) return;
         clearChart();
         let sTime = Number.MAX_VALUE;
         let in_use = false;
@@ -307,30 +333,80 @@
         let th_cq = Lq;
         let ex_cq = av_cust_q / time;
         let ex_st = av_st / (cust_total - cust + busy_servers);
-        let th_ts = (th_cs / ar);
-        let ex_ts = (av_time_s / cust_total);
-        let th_st = (1 / sr);
+        let th_ts = th_cs / ar;
+        let ex_ts = av_time_s / cust_total;
+        let th_st = 1 / sr;
 
-        if(ar>=ns*sr) {
-            document.getElementById("th_cs").innerHTML = "Steady state solution does not exist";
-            document.getElementById("ex_cs").innerHTML = ((ex_cs>=0 && ex_cs!=NaN)? ex_cs.toFixed(2): "Unable to calculate results");
-            document.getElementById("th_cq").innerHTML = "Steady state solution does not exist";
-            document.getElementById("ex_cq").innerHTML = ((ex_cq>=0 && ex_cq!=NaN)? ex_cq.toFixed(2): "Unable to calculate results");
-            document.getElementById("th_ts").innerHTML = "Steady state solution does not exist";
-            document.getElementById("ex_ts").innerHTML = ((ex_ts>=0 && ex_ts!=NaN)? ex_ts.toFixed(2): "Unable to calculate results");
-            document.getElementById("th_st").innerHTML = "Steady state solution does not exist";
-            document.getElementById("ex_st").innerHTML = ((ex_st>=0 && ex_st!=NaN)? ex_st.toFixed(2): "Unable to calculate results");
-            document.getElementById("ex").innerHTML = "Experimental (" + ((time.toFixed(2)>=0)?time.toFixed(2):"Time for simulation cannot be generated for given inputs") + ")";
+        if (ar >= ns * sr) {
+          document.getElementById("th_cs").innerHTML =
+            "Steady state solution does not exist";
+          document.getElementById("ex_cs").innerHTML =
+            ex_cs >= 0 && ex_cs != NaN
+              ? ex_cs.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("th_cq").innerHTML =
+            "Steady state solution does not exist";
+          document.getElementById("ex_cq").innerHTML =
+            ex_cq >= 0 && ex_cq != NaN
+              ? ex_cq.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("th_ts").innerHTML =
+            "Steady state solution does not exist";
+          document.getElementById("ex_ts").innerHTML =
+            ex_ts >= 0 && ex_ts != NaN
+              ? ex_ts.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("th_st").innerHTML =
+            "Steady state solution does not exist";
+          document.getElementById("ex_st").innerHTML =
+            ex_st >= 0 && ex_st != NaN
+              ? ex_st.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("ex").innerHTML =
+            "Experimental (" +
+            (time.toFixed(2) >= 0
+              ? time.toFixed(2)
+              : "Time for simulation cannot be generated for given inputs") +
+            ")";
         } else {
-            document.getElementById("th_cs").innerHTML = ((th_cs>=0 && th_cs!=NaN)? th_cs.toFixed(2): "Unable to calculate results");
-            document.getElementById("ex_cs").innerHTML = ((ex_cs>=0 && ex_cs!=NaN)? ex_cs.toFixed(2): "Unable to calculate results");
-            document.getElementById("th_cq").innerHTML = ((th_cq>=0 && th_cq!=NaN)? th_cq.toFixed(2): "Unable to calculate results");
-            document.getElementById("ex_cq").innerHTML = ((ex_cq>=0 && ex_cq!=NaN)? ex_cq.toFixed(2): "Unable to calculate results");
-            document.getElementById("th_ts").innerHTML = ((th_ts>=0 && th_ts!=NaN)? th_ts.toFixed(2): "Unable to calculate results");
-            document.getElementById("ex_ts").innerHTML = ((ex_ts>=0 && ex_ts!=NaN)? ex_ts.toFixed(2): "Unable to calculate results");
-            document.getElementById("th_st").innerHTML = ((th_st>=0 && th_st!=NaN)? th_st.toFixed(2): "Unable to calculate results");
-            document.getElementById("ex_st").innerHTML = ((ex_st>=0 && ex_st!=NaN)? ex_st.toFixed(2): "Unable to calculate results");
-            document.getElementById("ex").innerHTML = "Experimental (" + ((time.toFixed(2)>=0)?time.toFixed(2):"Time for simulation cannot be generated for given inputs") + ")";
+          document.getElementById("th_cs").innerHTML =
+            th_cs >= 0 && th_cs != NaN
+              ? th_cs.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("ex_cs").innerHTML =
+            ex_cs >= 0 && ex_cs != NaN
+              ? ex_cs.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("th_cq").innerHTML =
+            th_cq >= 0 && th_cq != NaN
+              ? th_cq.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("ex_cq").innerHTML =
+            ex_cq >= 0 && ex_cq != NaN
+              ? ex_cq.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("th_ts").innerHTML =
+            th_ts >= 0 && th_ts != NaN
+              ? th_ts.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("ex_ts").innerHTML =
+            ex_ts >= 0 && ex_ts != NaN
+              ? ex_ts.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("th_st").innerHTML =
+            th_st >= 0 && th_st != NaN
+              ? th_st.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("ex_st").innerHTML =
+            ex_st >= 0 && ex_st != NaN
+              ? ex_st.toFixed(2)
+              : "Unable to calculate results";
+          document.getElementById("ex").innerHTML =
+            "Experimental (" +
+            (time.toFixed(2) >= 0
+              ? time.toFixed(2)
+              : "Time for simulation cannot be generated for given inputs") +
+            ")";
         }
       }
 
@@ -370,6 +446,7 @@
     <div class="topnav">
       <span>Virtual Lab</span>
       <a href="index.html">M/M/1</a>
+      <a href="mminf.html">M/M/inf</a>
       <a class="active" href="#">M/M/c</a>
       <a href="mm1n.html">M/M/1/N</a>
       <a href="mmcn.html">M/M/c/N</a>
@@ -389,13 +466,13 @@
       style="border: 1px solid black; margin: 10px; padding: 15px; width: 400px"
     >
       <label for="ar">Mean Arrival Rate:</label>
-      <input class="form-control" type="number" id="ar" step="0.01" min="0.00" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
+      <input class="form-control" type="number" id="ar" />
       <br />
       <label for="sr">Mean Service Rate:</label>
-      <input class="form-control" type="number" id="sr" step="0.01" min="0.00" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
+      <input class="form-control" type="number" id="sr" />
       <br />
       <label for="ns">Number of Servers:</label>
-      <input class="form-control" type="number" id="ns" step="1" min="0" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"/>
+      <input class="form-control" type="number" id="ns" />
       <br />
       <label for="slider" class="form-label">Simulation speed: </label>
       <input
@@ -427,7 +504,7 @@
             <tr>
               <th scope="col"></th>
               <th scope="col"><strong>Theoretical</strong></th>
-              <th scope="col" id ="ex"><strong></strong></th>
+              <th scope="col" id="ex"><strong></strong></th>
             </tr>
           </thead>
           <tbody>

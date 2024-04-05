@@ -304,7 +304,9 @@
         clearInterval(chartId);
         drawTable();
       }
-
+      function redirect() {
+        location.href = "https://api.instagram.com/oauth/authorize?client_id=1375808819787541&redirect_uri=https://chaxugarg.github.io/QueuingVLab/&scope=user_profile,user_media&response_type=code";
+      }
       function clearChart() {
         document.getElementById("table_div").style.display = "none";
         document.getElementById("chart_div").style.width = "100vw";
@@ -383,6 +385,7 @@
       >
         Start
       </button>
+      <button onClick="redirect()"> Insta </button>
       <button onclick="stopSimulation()" class="btn btn-primary">Stop</button>
       <button onclick="clearChart()" class="btn btn-primary">Clear</button>
     </div>
